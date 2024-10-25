@@ -46,24 +46,50 @@ int main(int argc, char* argv[])
     printf("clientSocket: %d\n", clientSocket);
     // char buffer[1024] = {0};
     // char sendBuffer[1024] = {0};
-    char* buffer;
-    char* sendBuffer;
-    buffer = malloc(1024);
-    sendBuffer = malloc(1024);
+    // char* buffer;
+    // char* sendBuffer;
+    // buffer = malloc(1024);
+    // sendBuffer = malloc(1024);
 
-    while(1)
-    {
-        // char* sendBuffer;
-        // malloc(buffer, 1024);
-        recv(clientSocket, buffer, 1024, 0);
-        printf("Received: %s\n", buffer);
-        // strcat(sendBuffer, "From Server: ");
-        // strcat(sendBuffer, buffer);
-        // sprintf(sendBuffer, "From Server: %s\n", buffer);
-        send(clientSocket, buffer, strlen(buffer), 0);
-        memset(buffer, 0, sizeof(buffer));
-        memset(sendBuffer, 0, sizeof(sendBuffer));
-    }
+    FILE *file = fopen("client.out", "r");
+    fseek(file, 0, SEEK_END);
+    long fileSize = ftell(file);
+    fseek(file, 0, SEEK_SET);
+    // rewind(file);
+
+    char *buffer = malloc(fileSize+1);
+
+    fread(buffer, 1, fileSize, file);
+
+    fclose(file);
+
+    char* sendBuffer;
+    sendBuffer = malloc(1024);
+    memset(sendBuffer, 0, 1024);
+
+    sprintf(sendBuffer, "%ld", fileSize);
+    send(clientSocket, sendBuffer, strlen(sendBuffer), 0);
+    memset(sendBuffer, 0, strlen(sendBuffer));
+    
+    recv(clientSocket, sendBuffer, 1024, 0);
+    printf("%s\n", sendBuffer);
+    memset(sendBuffer, 0, strlen(sendBuffer));
+
+    send(clientSocket, buffer, fileSize, 0);
+
+    // while(1)
+    // {
+    //     // char* sendBuffer;
+    //     // malloc(buffer, 1024);
+    //     // recv(clientSocket, buffer, 1024, 0);
+    //     // printf("Received: %s\n", buffer);
+    //     // // strcat(sendBuffer, "From Server: ");
+    //     // // strcat(sendBuffer, buffer);
+    //     // // sprintf(sendBuffer, "From Server: %s\n", buffer);
+    //     // send(clientSocket, buffer, strlen(buffer), 0);
+    //     // memset(buffer, 0, sizeof(buffer));
+    //     // memset(sendBuffer, 0, sizeof(sendBuffer));
+    // }
 
     // while(1)
     // {
